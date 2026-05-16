@@ -7,6 +7,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env')});
 const mandatoryVariables = [
     "PORT",
     "APP_ENV",
+    "MONGODB_URI",
 ];
 
 const missingVariables = mandatoryVariables.filter((variable) => !process.env[variable]);
@@ -26,6 +27,7 @@ if(missingVariables.length > 0) {
 const config = {
     PORT: process.env.PORT || 5000,
     APP_ENV: process.env.APP_ENV || "development",
+    MONGO_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/whatsapp_marketing",
 };
 
 export default config;

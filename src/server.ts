@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import config from "./config/env.config";
 import logger from "./services/logger";
 import client from "./services/whatsapp";
+import connectToDatabase from "./config/db.config";
 
 const app = express();
 const PORT = config.PORT || 3000;
@@ -20,6 +21,7 @@ app.get("/health", (req: Request, res: Response) => {
 export const startServer = async() => {
     try{
         await client.initialize();
+        await connectToDatabase();
         app.listen(PORT, () => {
             logger.info(`Server is running on port ${PORT}`);
         });
