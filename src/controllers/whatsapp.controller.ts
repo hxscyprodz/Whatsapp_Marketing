@@ -14,6 +14,18 @@ const getGroups = async () => {
     }
 };
 
+const postStatus = async (message: string) => {
+    const FLAG = "POST_STATUS";
+    try {
+        logger.info(`${FLAG} - Posting status: ${message}`);
+        await client.sendMessage("status@broadcast", message);
+        logger.info(`${FLAG} - Status posted successfully.`);
+    } catch (error) {
+        logger.error(`${FLAG} - Error posting status:`, error);
+    };
+};
+
 export {
     getGroups,
+    postStatus
 }
