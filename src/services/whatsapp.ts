@@ -1,7 +1,8 @@
 import { Client, LocalAuth } from "whatsapp-web.js";
+import GroupModel from "../models/group.model";
 import qrcode from "qrcode-terminal";
 import logger from "./logger";
-import { getGroups, postStatus } from "../controllers/whatsapp.controller";
+import { getGroups, uploadImageToSupabase } from "../controllers/whatsapp.controller";
 import { scheduleCronJob } from "./cron";
 
 const client = new Client({
@@ -15,16 +16,8 @@ client.on("qr", (qr) => {
 
 client.on("ready", async() => {
     logger.info("Connection established. Client is ready!");
-    scheduleCronJob("13 16 * * *", async() => {
-        const message = "Good morning! This is your daily status update.";
-        await postStatus(message);
-    });
-    /*const groups = await getGroups();
-    groups?.map(group => {
-        console.log(`Group Name: ${group.name}, Group ID: ${group.id._serialized}`);
-    })*/
 
-    //TODO: Implement a function to add groups to the database and associate them with the user for future reference and operations.
+    //TODO: Implement a cron job to fetch groups every 24 hours and update the database accordingly.
 });
 
 client.on("auth_failure", (message) => {
@@ -32,7 +25,7 @@ client.on("auth_failure", (message) => {
 });
 
 client.on("message", async(message) => {
-    const name = await message.getContact().then(contact => contact.pushname || contact.number);
+    const id = await message.getContact().then(contact => contact.id._serialized);
     if(message.hasQuotedMsg) {
         const quotedMsg = await message.getQuotedMessage();
         if(quotedMsg.fromMe) {
@@ -40,12 +33,16 @@ client.on("message", async(message) => {
             logger.info(`Someone replied to your message "${quotedMsg.body}" you sent: ${message.body}`);
         } else {
             //TODO: Implement a function to determine if the message is associated with their line of business
-            logger.info(`New message received from ${name} (${name}): ${message.body}`);
+            logger.info(`New message received from ${id}: ${message.body}`);
         }
     } else {
         //TODO: Implement a function to determine if the message is associated with their line of business
-        logger.info(`New message received from ${name}: ${message.body}`);
+        logger.info(`New message received from ${id}: ${message.body}`);
     };
+});
+
+client.on("message_create", async(message) => {
+    uploadImageToSupabase(message)
 });
 
 
