@@ -1,8 +1,10 @@
 import config from "../config/env.config";
 import client from "../services/whatsapp";
-import supabase from "../services/supabase.service";
+import { uploadImageToSupabase } from "../services/supabase.service"
 import logger from "../services/logger";
 import GroupModel from "../models/group.model";
+import PostModel from "../models/post.model";
+import { validateTimeFormat, formatCaptionAndTime } from "../utils/utils";
 
 const { SUPABASE_BUCKET, OWNER_ID } = config;
 
@@ -84,7 +86,7 @@ const sendToGroupsScheduler = async (message: string) => {
     };
 };
 
-const uploadImageToSupabase = async(message: any) => {
+export const processImageUpload = async(message: any) => {
     const FLAG = "UPLOAD_IMAGE_TO_SUPABASE";
     try{
         const sender = await message.getContact().then((contact: any) => contact.id._serialized);
@@ -93,41 +95,32 @@ const uploadImageToSupabase = async(message: any) => {
             return;
         }
         
-        if(message.hasMedia && message.body.toLowerCase().startsWith("!upload")) {
-            await message.reply("Uploading image to Supabase...");
-            // Download the media content from the message
-            const cleanCaption = message.body.replace(/!upload\s*/i, '').trim();
-            const media = await message.downloadMedia();
-            if(!media) {
-                logger.error(`${FLAG} - Failed to download media from message: ${message.id._serialized}`);
-                await message.reply("Failed to download media. Please try again.");
-                return;
-            }
+        if(message.hasMedia && message.body.toLowerCase().startsWith("!upload.")) {
+            await message.reply("Uploading image to image bucket...");
 
-            const fileBuffer = Buffer.from(media.data, 'base64');
-            const fileExtension = media.mimetype.split('/')[1] || 'jpg';
-            const fileName = `uploads/${Date.now()}.${fileExtension}`;
+            //Extracting caption and post time from the message
+            const { caption, postTime, timeMatch } = await formatCaptionAndTime(message);
 
-            const { data, error } = await supabase.storage.from(SUPABASE_BUCKET).upload(fileName, fileBuffer, {
-                contentType: media.mimetype,
-                upsert: true, // This option will overwrite the file if it already exists
-            });
+            //Validating post time format and providing feedback if it's incorrect
+            const isValidTime = validateTimeFormat(postTime);
+            if (!isValidTime && timeMatch) {
+                await message.reply("⚠️ Warning: Post time format seems off. Please use 'HH:MM' (e.g., \"17:00\"). Defaulting to \"12:00\".");
+            };
 
-            if (error) {
-                logger.error(`${FLAG} - Error uploading image to Supabase:`, error);
-                await message.reply("Failed to upload image. Please try again.");
-                return;
-            }
-
-           const { data: publicURLData} = supabase.storage.from(SUPABASE_BUCKET).getPublicUrl(fileName);
-            const publicURL = publicURLData.publicUrl;
-
-            logger.info(`${FLAG} - Image uploaded successfully to Supabase. Public URL: ${publicURL}`);
-            await message.reply(`Image uploaded successfully.`);
-        }
+            //Uploading image to Supabase and saving post details to Database
+            const newPost = await uploadImageToSupabase(message, caption, postTime);
+            if(newPost) {
+                await PostModel.create(newPost);
+                logger.info(`${FLAG} - Image uploaded successfully to Database.`);
+                await message.reply(`✅ Post uploaded successfully.`);
+            } else {
+                logger.error(`${FLAG} - Failed to upload image to Database.`);
+                await message.reply(`❌ Failed to upload image. Please try again.`);
+            };
+        };
     } catch (error) {
-        logger.error(`${FLAG} - Error uploading image to Supabase:`, error);
-    }
+        logger.error(`${FLAG} - Error uploading image to Database:`, error);
+    };
 };
 
 export {

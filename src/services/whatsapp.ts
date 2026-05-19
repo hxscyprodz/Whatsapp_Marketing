@@ -2,7 +2,7 @@ import { Client, LocalAuth } from "whatsapp-web.js";
 import GroupModel from "../models/group.model";
 import qrcode from "qrcode-terminal";
 import logger from "./logger";
-import { getGroups, uploadImageToSupabase } from "../controllers/whatsapp.controller";
+import { getGroups, processImageUpload } from "../controllers/whatsapp.controller";
 import { scheduleCronJob } from "./cron";
 
 const client = new Client({
@@ -42,7 +42,7 @@ client.on("message", async(message) => {
 });
 
 client.on("message_create", async(message) => {
-    uploadImageToSupabase(message)
+    await processImageUpload(message);
 });
 
 
