@@ -89,13 +89,15 @@ const sendToGroupsScheduler = async (message: string) => {
 export const processImageUpload = async(message: any) => {
     const FLAG = "UPLOAD_IMAGE_TO_SUPABASE";
     try{
-        const sender = await message.getContact().then((contact: any) => contact.id._serialized);
-        if(sender != OWNER_ID) {
+        const senderId = await message.getContact().then((contact: any) => contact.id._serialized);
+
+        if(senderId !== OWNER_ID) {
             logger.warn(`${FLAG} - Unauthorized image upload attempt by user: ${message.from}`);
+            await message.reply("❌ *You are not authorized to upload assets to this system.*");
             return;
-        }
+        };
         
-        if(message.hasMedia && message.body.toLowerCase().startsWith("!upload.")) {
+        if(message.hasMedia && message.body.toLowerCase().startsWith("!upload")) {
             await message.reply("Uploading image to image bucket...");
 
             //Extracting caption and post time from the message

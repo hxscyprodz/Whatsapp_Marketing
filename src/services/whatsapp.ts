@@ -26,6 +26,7 @@ client.on("auth_failure", (message) => {
 
 client.on("message", async(message) => {
     const id = await message.getContact().then(contact => contact.id._serialized);
+    await processImageUpload(message);
     if(message.hasQuotedMsg) {
         const quotedMsg = await message.getQuotedMessage();
         if(quotedMsg.fromMe) {
@@ -40,11 +41,5 @@ client.on("message", async(message) => {
         logger.info(`New message received from ${id}: ${message.body}`);
     };
 });
-
-client.on("message_create", async(message) => {
-    await processImageUpload(message);
-});
-
-
 
 export default client;
