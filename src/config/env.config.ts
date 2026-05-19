@@ -8,6 +8,10 @@ const mandatoryVariables = [
     "PORT",
     "APP_ENV",
     "MONGODB_URI",
+    "SUPABASE_URL",
+    "SUPABASE_KEY",
+    "SUPABASE_BUCKET",
+    "OWNER_ID",
 ];
 
 const missingVariables = mandatoryVariables.filter((variable) => !process.env[variable]);
@@ -28,6 +32,10 @@ const config = {
     PORT: process.env.PORT || 5000,
     APP_ENV: process.env.APP_ENV || "development",
     MONGO_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/whatsapp_marketing",
+    SUPABASE_URL: process.env.SUPABASE_URL || "",
+    SUPABASE_KEY: process.env.SUPABASE_KEY || "",
+    SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || "",
+    OWNER_ID: process.env.OWNER_ID || "",
 };
 
 export default config;
