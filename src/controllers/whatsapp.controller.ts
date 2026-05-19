@@ -6,7 +6,7 @@ import GroupModel from "../models/group.model";
 import PostModel from "../models/post.model";
 import { validateTimeFormat, formatCaptionAndTime } from "../utils/utils";
 
-const { SUPABASE_BUCKET, OWNER_ID } = config;
+const { OWNER_ID } = config;
 
 const getGroups = async () => {
     const FLAG = "FETCH_GROUPS";
