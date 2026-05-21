@@ -1,13 +1,15 @@
 import { Client, LocalAuth } from "whatsapp-web.js";
-import GroupModel from "../models/group.model";
+import config from "../config/env.config";
 import qrcode from "qrcode-terminal";
 import logger from "./logger";
-import { getGroups, processImageUpload } from "../controllers/whatsapp.controller";
+import { getGroups, processImageUpload, scheduledStatusUpdate } from "../controllers/whatsapp.controller";
 import { scheduleCronJob } from "./cron";
 
 const client = new Client({
     authStrategy: new LocalAuth(),
 });
+
+const { CRON_SCHEDULE_GROUPS, CRON_SCHEDULE_STATUS } = config;
 
 client.on("qr", (qr) => {
     logger.info("QR code received, scan it with your WhatsApp mobile app.");
@@ -16,7 +18,8 @@ client.on("qr", (qr) => {
 
 client.on("ready", async() => {
     logger.info("Connection established. Client is ready!");
-
+    scheduleCronJob(CRON_SCHEDULE_GROUPS, getGroups);
+    scheduleCronJob(CRON_SCHEDULE_STATUS, scheduledStatusUpdate);
     //TODO: Implement a cron job to fetch groups every 24 hours and update the database accordingly.
 });
 

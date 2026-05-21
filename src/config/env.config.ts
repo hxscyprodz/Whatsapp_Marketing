@@ -13,7 +13,7 @@ const mandatoryVariables = [
     "SUPABASE_BUCKET",
     "OWNER_ID",
     "RETRY_LIMIT",
-    "RETRY_INTERVAL"
+    "RETRY_INTERVAL",
 ];
 
 const missingVariables = mandatoryVariables.filter((variable) => !process.env[variable]);
@@ -39,7 +39,9 @@ const config = {
     SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || "",
     OWNER_ID: process.env.OWNER_ID || "",
     RETRY_LIMIT: parseInt(process.env.RETRY_LIMIT || "5", 10),
-    RETRY_INTERVAL: parseInt(process.env.RETRY_INTERVAL || "2000", 10)
+    RETRY_INTERVAL: parseInt(process.env.RETRY_INTERVAL || "2000", 10),
+    CRON_SCHEDULE_GROUPS: process.env.CRON_SCHEDULE_GROUPS || "0 0 * * *",
+    CRON_SCHEDULE_STATUS: process.env.CRON_SCHEDULE_STATUS || "0 0 * * *"
 };
 
 export default config;
