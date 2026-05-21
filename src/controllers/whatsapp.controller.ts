@@ -1,10 +1,13 @@
 import config from "../config/env.config";
 import client from "../services/whatsapp";
+import { MessageMedia } from "whatsapp-web.js";
 import { uploadImageToSupabase } from "../services/supabase.service"
 import logger from "../services/logger";
 import GroupModel from "../models/group.model";
 import PostModel from "../models/post.model";
 import { validateTimeFormat, formatCaptionAndTime } from "../utils/utils";
+import { format } from "date-fns";
+import { IPost } from "../types/types";
 
 const { OWNER_ID } = config;
 
@@ -40,11 +43,12 @@ const getGroups = async () => {
     }
 };
 
-const postStatus = async (message: string) => {
+const postStatus = async (caption: string, imageUrl: string) => {
     const FLAG = "POST_STATUS";
     try {
-        logger.info(`${FLAG} - Posting status: ${message}`);
-        await client.sendMessage("status@broadcast", message);
+        logger.info(`${FLAG} - Posting status: ${caption}`);
+        const media = await MessageMedia.fromUrl(imageUrl);
+        await client.sendMessage("status@broadcast", media, { caption });
         logger.info(`${FLAG} - Status posted successfully.`);
     } catch (error) {
         logger.error(`${FLAG} - Error posting status:`, error);
@@ -125,10 +129,29 @@ export const processImageUpload = async(message: any) => {
     };
 };
 
+const scheduledStatusUpdate = async() => {
+    const FLAG = "SCHEDULED_STATUS_UPDATE";
+    const now = new Date();
+    const time = format(now, "HH:mm");
+    try {
+        const currentTime = time;
+        const post = await PostModel.findOne({ scheduledTime: time });
+        if(!post) {
+            logger.info(`${FLAG} - No post found for the scheduled time: ${time}. Current time is ${currentTime}.`);
+            return;
+        };
+        await postStatus(post.caption, post.imageUrl);
+        logger.info(`${FLAG} - Status updated successfully.`);
+    } catch (error) {
+        logger.error(`${FLAG} - Error updating status:`, error);
+    };
+};
+
 export {
     getGroups,
     postStatus,
     sendMessageToGroup,
     sendToGroupsScheduler,
-    uploadImageToSupabase
+    uploadImageToSupabase,
+    scheduledStatusUpdate,
 }
