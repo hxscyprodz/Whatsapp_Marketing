@@ -23,14 +23,14 @@ const getGroups = async () => {
             return;
         };
         
-        groups.forEach(group => {
-            const isExistingGroup = GroupModel.findOne({ id: group.id._serialized });
+        groups.forEach(async (group) => {
+            const isExistingGroup = await GroupModel.findOne({ id: group.id._serialized });
             if(!isExistingGroup) {
                 const newGroup = new GroupModel({
                     id: group.id._serialized,
                     name: group.name,
                 });
-                newGroup.save()
+                await newGroup.save()
                     .then(() => logger.info(`${FLAG} - Group "${group.name}" saved to database.`))
                     .catch((error) => logger.error(`${FLAG} - Error saving group "${group.name}":`, error));
             } else {

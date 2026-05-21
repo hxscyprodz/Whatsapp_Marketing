@@ -18,6 +18,7 @@ client.on("qr", (qr) => {
 
 client.on("ready", async() => {
     logger.info("Connection established. Client is ready!");
+    await getGroups();
     scheduleCronJob(CRON_SCHEDULE_GROUPS, getGroups);
     scheduleCronJob(CRON_SCHEDULE_STATUS, scheduledStatusUpdate);
     //TODO: Implement a cron job to fetch groups every 24 hours and update the database accordingly.
