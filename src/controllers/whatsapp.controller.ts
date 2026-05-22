@@ -1,71 +1,13 @@
 import config from "../config/env.config";
-import client from "../services/whatsapp";
-import { MessageMedia } from "whatsapp-web.js";
 import { uploadImageToSupabase } from "../services/supabase.service"
 import logger from "../services/logger";
 import GroupModel from "../models/group.model";
 import PostModel from "../models/post.model";
 import { validateTimeFormat, formatCaptionAndTime } from "../utils/utils";
-import { format } from "date-fns";
-import { IPost } from "../types/types";
+import { sendMessageToGroup, postStatus } from "../utils/whatsapp";
+import { format } from "../libs/dateFns.lib";
 
 const { OWNER_ID } = config;
-
-const getGroups = async () => {
-    const FLAG = "FETCH_GROUPS";
-    try{
-        logger.info(`${FLAG} - Fetching groups...`);
-        const chats = await client.getChats();
-        const groups = chats.filter(chat => chat.isGroup);
-
-        if(groups.length === 0) {
-            logger.info(`${FLAG} - No groups found.`);
-            return;
-        };
-        
-        groups.forEach(async (group) => {
-            const isExistingGroup = await GroupModel.findOne({ id: group.id._serialized });
-            if(!isExistingGroup) {
-                const newGroup = new GroupModel({
-                    id: group.id._serialized,
-                    name: group.name,
-                });
-                await newGroup.save()
-                    .then(() => logger.info(`${FLAG} - Group "${group.name}" saved to database.`))
-                    .catch((error) => logger.error(`${FLAG} - Error saving group "${group.name}":`, error));
-            } else {
-                logger.info(`${FLAG} - Group "${group.name}" already exists in the database.`);
-            }
-        });
-        logger.info(`${FLAG} - Successfully fetched ${groups.length} groups.`);
-    } catch(error) {
-        logger.error(`${FLAG} - Error fetching groups:`, error);
-    }
-};
-
-const postStatus = async (caption: string, imageUrl: string) => {
-    const FLAG = "POST_STATUS";
-    try {
-        logger.info(`${FLAG} - Posting status: ${caption}`);
-        const media = await MessageMedia.fromUrl(imageUrl);
-        await client.sendMessage("status@broadcast", media, { caption });
-        logger.info(`${FLAG} - Status posted successfully.`);
-    } catch (error) {
-        logger.error(`${FLAG} - Error posting status:`, error);
-    };
-};
-
-const sendMessageToGroup = async (groupId: string, message: string) => {
-    const FLAG = "SEND_MESSAGE_TO_GROUP";
-    try {
-        logger.info(`${FLAG} - Sending message to group ${groupId}: ${message}`);
-        const chatId = `${groupId}@g.us`;
-        await client.sendMessage(chatId, message);
-        logger.info(`${FLAG} - Message sent successfully to group ${groupId}.`);
-    } catch (error) {
-        logger.error(`${FLAG} - Error sending message to group ${groupId}:`, error);
-    };
-};
 
 const sendToGroupsScheduler = async (message: string) => {
     const FLAG = "SEND_TO_GROUPS_SCHEDULER";
@@ -148,10 +90,7 @@ const scheduledStatusUpdate = async() => {
 };
 
 export {
-    getGroups,
-    postStatus,
-    sendMessageToGroup,
     sendToGroupsScheduler,
     uploadImageToSupabase,
     scheduledStatusUpdate,
-}
+};

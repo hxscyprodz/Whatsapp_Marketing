@@ -1,5 +1,5 @@
 import { IPost } from "../types/types";
-import { Schema, model } from "mongoose";
+import { Schema, model } from "../libs/mongoose.lib";
 
 const postSchema = new Schema<IPost>({
     caption: { type: String, required: true },

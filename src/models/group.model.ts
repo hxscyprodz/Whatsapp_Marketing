@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 import { TGroup } from "../types/types";
 
-const groupSchema = new mongoose.Schema<TGroup>({
-  id: { type: String, required: true },
+const groupSchema = new Schema<TGroup>({
+  whatsappGroupId: { type: String, required: true },
   name: { type: String, required: true },
 });
 
-const GroupModel = mongoose.model<TGroup>("Group", groupSchema);
+const GroupModel = model<TGroup>("Group", groupSchema);
 
 export default GroupModel;

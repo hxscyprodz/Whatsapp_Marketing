@@ -1,5 +1,5 @@
 import config from "./env.config";
-import { connect } from "mongoose";
+import { connect } from "../libs/mongoose.lib";
 import logger from "../services/logger";
 
 const connectToDatabase = async (): Promise<void> => {

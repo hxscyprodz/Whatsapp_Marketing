@@ -1,9 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
-import PostModel from "../models/post.model";
+import supabase from "../libs/supabase.lib";
 import config from "../config/env.config";
 import logger from "./logger";
 
-const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 
 export const uploadImageToSupabase = async (imageData: any, caption: string, postTime: string) => {
   const FLAG = "UPLOAD_IMAGE_TO_SUPABASE";

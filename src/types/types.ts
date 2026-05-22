@@ -1,5 +1,5 @@
 export type TGroup = {
-    id: string;
+    whatsappGroupId: string;
     name: string;
 };
 
