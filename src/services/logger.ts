@@ -1,8 +1,8 @@
-import { createLogger, format, transports } from "winston";
+import { createLogger, format, transports, DailyRotateFile } from "../libs/winston.lib";
 import config from "../config/env.config";
-import DailyRotateFile from "winston-daily-rotate-file";
 import fs from "fs";
 import path from "path";
+
 const { printf, combine, json, colorize, timestamp } = format;
 
 const logDir = path.join(__dirname, '../../src/logs');

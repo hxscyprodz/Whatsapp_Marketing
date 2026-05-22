@@ -1,13 +1,10 @@
-import { Client, LocalAuth } from "whatsapp-web.js";
+import { client } from "../libs/whatsaapweb.lib";
 import config from "../config/env.config";
 import qrcode from "qrcode-terminal";
 import logger from "./logger";
-import { getGroups, processImageUpload, scheduledStatusUpdate } from "../controllers/whatsapp.controller";
+import { processImageUpload, scheduledStatusUpdate } from "../controllers/whatsapp.controller";
+import { getGroups } from "../utils/whatsapp";
 import { scheduleCronJob } from "./cron";
-
-const client = new Client({
-    authStrategy: new LocalAuth(),
-});
 
 const { CRON_SCHEDULE_GROUPS, CRON_SCHEDULE_STATUS } = config;
 
