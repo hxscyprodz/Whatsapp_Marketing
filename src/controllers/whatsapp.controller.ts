@@ -9,29 +9,6 @@ import { format } from "../libs/dateFns.lib";
 
 const { OWNER_ID } = config;
 
-const sendToGroupsScheduler = async (message: string) => {
-    const FLAG = "SEND_TO_GROUPS_SCHEDULER";
-    try {
-        logger.info(`${FLAG} - Sending scheduled message to all groups: ${message}`);
-        const groups = await GroupModel.find();
-        for(const group of groups) {
-           new Promise(async (resolve, reject) => {
-                setTimeout(async () => {
-                    try {
-                        await sendMessageToGroup(group.id, message);
-                        resolve(true);
-                    } catch (error) {
-                        reject(error);
-                    };
-                }, 10000); // Adding a delay of 10 seconds between messages to avoid rate limits
-            });
-        }
-        logger.info(`${FLAG} - Scheduled message sent successfully to all groups.`);
-    } catch (error) {
-        logger.error(`${FLAG} - Error sending scheduled message to groups:`, error);
-    };
-};
-
 export const processImageUpload = async(message: any) => {
     const FLAG = "UPLOAD_IMAGE_TO_SUPABASE";
     try{
@@ -90,7 +67,6 @@ const scheduledStatusUpdate = async() => {
 };
 
 export {
-    sendToGroupsScheduler,
     uploadImageToSupabase,
     scheduledStatusUpdate,
 };

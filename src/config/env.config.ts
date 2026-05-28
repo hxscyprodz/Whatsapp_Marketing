@@ -39,8 +39,7 @@ const config = {
     OWNER_ID: process.env.OWNER_ID || "",
     RETRY_LIMIT: parseInt(process.env.RETRY_LIMIT || "5", 10),
     RETRY_INTERVAL: parseInt(process.env.RETRY_INTERVAL || "2000", 10),
-    CRON_SCHEDULE_GROUPS: process.env.CRON_SCHEDULE_GROUPS || "0 0 * * *",
-    CRON_SCHEDULE_STATUS: process.env.CRON_SCHEDULE_STATUS || "0 0 * * *"
+    CRON_SCHEDULE_INTERVAL: process.env.CRON_SCHEDULE_INTERVAL || "0,05 * * * *",
 };
 
 export default config;

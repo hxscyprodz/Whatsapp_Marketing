@@ -4,21 +4,32 @@ import qrcode from "qrcode-terminal";
 import logger from "./logger";
 import { processImageUpload, scheduledStatusUpdate } from "../controllers/whatsapp.controller";
 import { getGroups } from "../utils/whatsapp";
-import { scheduleCronJob } from "./cron";
-
-const { CRON_SCHEDULE_GROUPS, CRON_SCHEDULE_STATUS } = config;
+import { runCronJobs } from "./cron";
+import { IAppState } from "../types/types";
 
 client.on("qr", (qr) => {
     logger.info("QR code received, scan it with your WhatsApp mobile app.");
     qrcode.generate(qr, { small: true });
 });
 
+const appState: IAppState = {
+    isClientReady: false,
+    isCronRunning: false
+};
+
 client.on("ready", async() => {
     logger.info("Connection established. Client is ready!");
+    appState.isClientReady = true;
     await getGroups();
-    scheduleCronJob(CRON_SCHEDULE_GROUPS, getGroups);
-    scheduleCronJob(CRON_SCHEDULE_STATUS, scheduledStatusUpdate);
-    //TODO: Implement a cron job to fetch groups every 24 hours and update the database accordingly.
+});
+
+//cron jobs
+runCronJobs(appState);
+
+
+client.on("disconnected", (reason) => {
+    logger.warn(`Client disconnected: ${reason}`);
+    process.exit(1);
 });
 
 client.on("auth_failure", (message) => {

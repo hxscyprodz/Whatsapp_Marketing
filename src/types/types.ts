@@ -8,3 +8,14 @@ export interface IPost {
     imageUrl: string;
     scheduledTime: string;
 };
+
+export interface ISendToGroupParams {
+    groupId: string;
+    message: string;
+    imageUrl?: string;
+};
+
+export interface IAppState {
+    isClientReady: boolean;
+    isCronRunning: boolean;
+};
