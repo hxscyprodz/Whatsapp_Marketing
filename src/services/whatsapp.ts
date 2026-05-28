@@ -1,8 +1,7 @@
 import { client } from "../libs/whatsaapweb.lib";
-import config from "../config/env.config";
 import qrcode from "qrcode-terminal";
 import logger from "./logger";
-import { processImageUpload, scheduledStatusUpdate } from "../controllers/whatsapp.controller";
+import { processImageUpload } from "../controllers/whatsapp.controller";
 import { getGroups } from "../utils/whatsapp";
 import { runCronJobs } from "./cron";
 import { IAppState } from "../types/types";

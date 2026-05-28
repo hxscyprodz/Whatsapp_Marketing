@@ -3,10 +3,16 @@ export type TGroup = {
     name: string;
 };
 
+export enum PostType {
+    POST = "post",
+    STORY = "story",
+};
+
 export interface IPost {
     caption: string;
     imageUrl: string;
     scheduledTime: string;
+    postType?: PostType;
 };
 
 export interface ISendToGroupParams {
