@@ -1,8 +1,7 @@
 import { client } from "../libs/whatsaapweb.lib";
-import config from "../config/env.config";
 import qrcode from "qrcode-terminal";
 import logger from "./logger";
-import { processImageUpload, scheduledStatusUpdate } from "../controllers/whatsapp.controller";
+//import { processImageUpload } from "../controllers/whatsapp.controller";
 import { getGroups } from "../utils/whatsapp";
 import { runCronJobs } from "./cron";
 import { IAppState } from "../types/types";
@@ -38,7 +37,7 @@ client.on("auth_failure", (message) => {
 
 client.on("message", async(message) => {
     const id = await message.getContact().then(contact => contact.id._serialized);
-    await processImageUpload(message);
+    //await processImageUpload(message);
     if(message.hasQuotedMsg) {
         const quotedMsg = await message.getQuotedMessage();
         if(quotedMsg.fromMe) {

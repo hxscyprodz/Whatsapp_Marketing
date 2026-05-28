@@ -1,9 +1,8 @@
 import cron from "node-cron";
 import logger from "./logger";
 import config from "../config/env.config";
-import { scheduledStatusUpdate } from "../controllers/whatsapp.controller";
 import { getGroups } from "../utils/whatsapp";
-import schedulePostToGroups from "./whatsapp/schedulePost";
+import {schedulePostToGroups, scheduledStatusUpdate} from "./whatsapp/schedulePost";
 import { IAppState } from "../types/types";
 
 const FLAG = "CRON_JOB";
@@ -31,10 +30,11 @@ export const runCronJobs = async (state: IAppState) => {
 
     try {
       logger.info("Executing scheduled tasks...");
-
-      await schedulePostToGroups();
-      await scheduledStatusUpdate();
-      await getGroups();
+        await Promise.allSettled([
+          scheduledStatusUpdate(),
+          schedulePostToGroups(),
+          getGroups()
+        ]);
     } catch (error) {
       logger.error("Error executing scheduled tasks:", error);
     } finally {
