@@ -1,7 +1,7 @@
 import PostModel from "../../models/post.model";
 import GroupModel from "../../models/group.model";
 import { sendMessageToGroup, postStatus } from "../../utils/whatsapp";
-import getCurrentTime from "../../utils/getCurrentTime";
+import { getCurrentTime } from "../../utils/getCurrentTime";
 import { format } from "../../libs/dateFns.lib";
 import logger from "../logger";
 
@@ -19,7 +19,7 @@ const schedulePostToGroups = async () => {
 
     const groups = await GroupModel.find();
     for (const post of scheduledPosts) {
-        // Check if the post type is "post" before sending to groups
+      // Check if the post type is "post" before sending to groups
       if (post.postType === "post") {
         for (const group of groups) {
           new Promise(async (resolve, reject) => {
