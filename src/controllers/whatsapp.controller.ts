@@ -1,4 +1,4 @@
-import config from "../config/env.config";
+/*import config from "../config/env.config";
 import { uploadImageToSupabase } from "../services/supabase.service";
 import logger from "../services/logger";
 import PostModel from "../models/post.model";
@@ -39,7 +39,7 @@ export const processImageUpload = async (message: any) => {
       }
 
       //Uploading image to Supabase and saving post details to Database
-      const newPost = await uploadImageToSupabase(message, caption, postTime);
+      const newPost = await uploadImageToSupabase({message, caption, postTime});
       if (newPost) {
         await PostModel.create(newPost);
         logger.info(`${FLAG} - Image uploaded successfully to Database.`);
@@ -54,4 +54,4 @@ export const processImageUpload = async (message: any) => {
   }
 };
 
-export { uploadImageToSupabase };
+export { uploadImageToSupabase };*/

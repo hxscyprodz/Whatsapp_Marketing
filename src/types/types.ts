@@ -1,27 +1,41 @@
 export type TGroup = {
-    whatsappGroupId: string;
-    name: string;
+  whatsappGroupId: string;
+  name: string;
 };
 
 export enum PostType {
-    POST = "post",
-    STORY = "story",
-};
+  POST = "post",
+  STORY = "story",
+}
 
-export interface IPost {
-    caption: string;
-    imageUrl: string;
-    scheduledTime: string;
-    postType?: PostType;
-};
+export interface ICreatePost {
+  caption: string;
+  imageUrl?: string;
+}
+export interface IPost extends ICreatePost {
+  scheduledTime: string;
+  postType?: PostType;
+}
 
 export interface ISendToGroupParams {
-    groupId: string;
-    message: string;
-    imageUrl?: string;
-};
+  groupId: string;
+  message: string;
+  imageUrl?: string;
+}
 
 export interface IAppState {
-    isClientReady: boolean;
-    isCronRunning: boolean;
-};
+  isClientReady: boolean;
+  isCronRunning: boolean;
+}
+
+export interface ICreatePostPayload {
+  media: IMedia;
+  caption: string;
+  postTime: string;
+}
+
+export interface IMedia {
+  imageBuffer: Buffer;
+  imageName: string;
+  mimeType: string;
+}

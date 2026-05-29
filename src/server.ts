@@ -6,6 +6,8 @@ import config from "./config/env.config";
 import logger from "./services/logger";
 import client from "./services/whatsapp";
 import connectToDatabase from "./config/db.config";
+import { errorHandler } from "./middlewares/errorHandler";
+import postRoutes from "./routes/posts.routes";
 
 const app = express();
 const PORT = config.PORT || 3000;
@@ -17,6 +19,10 @@ app.use(express.json());
 app.get("/health", (req: Request, res: Response) => {
     res.status(StatusCodes.OK).json({ status: "ok", message: "Server is healthy" });
 });
+
+app.use("/api/v1/posts", postRoutes);
+
+app.use(errorHandler);
 
 export const startServer = async() => {
     try{

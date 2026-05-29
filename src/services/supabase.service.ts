@@ -1,24 +1,16 @@
 import supabase from "../libs/supabase.lib";
 import config from "../config/env.config";
 import logger from "./logger";
+import { ICreatePostPayload} from "../types/types";
 
-
-export const uploadImageToSupabase = async (imageData: any, caption: string, postTime: string) => {
+export const uploadImageToSupabase = async ({media, caption, postTime}: ICreatePostPayload) => {
   const FLAG = "UPLOAD_IMAGE_TO_SUPABASE";
   try {
-    const media = await imageData.downloadMedia();
-    if (!media) {
-      logger.error(
-        `${FLAG} - Failed to download media from message: ${imageData.id._serialized}`,
-      );
-      await imageData.reply("❌ Failed to download media. Please try again.");
-      return;
-    }
 
-    const fileBuffer = Buffer.from(media.data, "base64");
-    const fileExtension = media.mimetype.split("/")[1] || "jpg";
+    const fileBuffer = media.imageBuffer;
+    const fileExtension = media.mimeType.split("/")[1] || "jpg";
     const fileName = `posts/${Date.now()}.${fileExtension}`;
-    const mimeType = media.mimetype;
+    const mimeType = media.mimeType;
 
     await supabase.storage
       .from(config.SUPABASE_BUCKET)

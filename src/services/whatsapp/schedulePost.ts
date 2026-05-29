@@ -28,7 +28,7 @@ const schedulePostToGroups = async () => {
                 await sendMessageToGroup({
                   groupId: group.whatsappGroupId,
                   message: post.caption,
-                  imageUrl: post.imageUrl,
+                  imageUrl: post.imageUrl || "",
                 });
                 resolve(true);
               } catch (error) {
@@ -61,7 +61,7 @@ const scheduledStatusUpdate = async () => {
 
     //check if the post type is story before posting status
     if (post.postType === "story") {
-      await postStatus(post.caption, post.imageUrl);
+      await postStatus(post.caption, post.imageUrl || "");
       logger.info(`${FLAG} - Status updated successfully.`);
     }
   } catch (error) {
