@@ -28,6 +28,11 @@ export interface IAppState {
   isCronRunning: boolean;
 }
 
+export enum EMessageSentFrom {
+  GROUP = "group",
+  DIRECT = "direct",
+}
+
 export interface ICreatePostPayload {
   media: IMedia;
   caption: string;
