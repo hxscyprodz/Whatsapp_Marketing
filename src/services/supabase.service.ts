@@ -6,7 +6,7 @@ import { ICreatePostPayload } from "../types/types";
 export const uploadImageToSupabase = async ({
   media,
   caption,
-  postTime,
+  postType,
 }: ICreatePostPayload) => {
   const FLAG = "UPLOAD_IMAGE_TO_SUPABASE";
   try {
@@ -30,7 +30,7 @@ export const uploadImageToSupabase = async ({
     const newPost = {
       caption: caption,
       imageUrl: publicURL,
-      scheduledTime: postTime,
+      postType: postType,
     };
 
     return newPost;
