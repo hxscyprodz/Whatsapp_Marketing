@@ -10,9 +10,9 @@ import mongoose from "mongoose";
 
 const createPost = async (req: Request, res: Response) => {
   try {
-    const { caption, postTime } = req.body;
+    const { caption, postType } = req.body;
 
-    if (!caption || !postTime) {
+    if (!caption || !postType) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: "Please provide needed details",
@@ -32,7 +32,7 @@ const createPost = async (req: Request, res: Response) => {
 
     const newImage = await uploadImageToSupabase({
       caption,
-      postTime,
+      postType,
       media: {
         imageBuffer,
         imageName,
@@ -42,7 +42,7 @@ const createPost = async (req: Request, res: Response) => {
 
     const newPost: IPost = {
       caption,
-      scheduledTime: postTime,
+      postType,
       imageUrl: newImage?.imageUrl || "",
     };
 

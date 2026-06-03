@@ -13,8 +13,8 @@ export interface ICreatePost {
   imageUrl?: string;
 }
 export interface IPost extends ICreatePost {
-  scheduledTime: string;
   postType?: PostType;
+  posted?: boolean;
 }
 
 export interface ISendToGroupParams {
@@ -36,7 +36,7 @@ export enum EMessageSentFrom {
 export interface ICreatePostPayload {
   media: IMedia;
   caption: string;
-  postTime: string;
+  postType: PostType;
 }
 
 export interface IMedia {
