@@ -14,6 +14,7 @@ const mandatoryVariables = [
     "OWNER_ID",
     "RETRY_LIMIT",
     "RETRY_INTERVAL",
+    "ACCESS_SECRET_KEY"
 ];
 
 const missingVariables = mandatoryVariables.filter((variable) => !process.env[variable]);
@@ -40,6 +41,7 @@ const config = {
     RETRY_LIMIT: parseInt(process.env.RETRY_LIMIT || "5", 10),
     RETRY_INTERVAL: parseInt(process.env.RETRY_INTERVAL || "2000", 10),
     CRON_SCHEDULE_INTERVAL: process.env.CRON_SCHEDULE_INTERVAL || "0,05 * * * *",
+    ACCESS_SECRET_KEY: process.env.ACCESS_SECRET_KEY
 };
 
 export default config;

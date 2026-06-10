@@ -8,6 +8,7 @@ import client from "./services/whatsapp";
 import connectToDatabase from "./config/db.config";
 import { errorHandler } from "./middlewares/errorHandler";
 import postRoutes from "./routes/posts.routes";
+import authRoutes from "./routes/auth.routes";
 
 const app = express();
 const PORT = config.PORT || 3000;
@@ -21,6 +22,7 @@ app.get("/health", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1/posts", postRoutes);
+app.use("/api/v1/auth", authRoutes);
 
 app.use(errorHandler);
 
