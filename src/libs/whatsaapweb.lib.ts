@@ -7,8 +7,8 @@ const client = new Client({
         args: [
             "--no-sandbox",
             "--disable-setuid-sandbox",
-
         ],
+        executablePath: '/usr/bin/google-chrome'
     },
 });
 
