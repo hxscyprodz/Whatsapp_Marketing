@@ -10,7 +10,7 @@ const schedulePostToGroups = async () => {
   const FLAG = "SCHEDULE_POST_TO_GROUPS";
   try {
     logger.info(`${FLAG} - Fetching scheduled posts...`);
-    const postTimes = ["09:00", "12:00", "22:05", "18:00"];
+    const postTimes = ["06:00", "07:00", "08:00", "00:00"];
     const time = format(new Date(), "HH:mm");
 
     if (!postTimes.includes(time)) return;
