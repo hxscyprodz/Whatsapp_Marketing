@@ -1,7 +1,8 @@
 import { client, MessageMedia } from "../../libs/whatsaapweb.lib";
-import { ISendToGroupParams } from "../../types/types";
+import { ISendMessageParams } from "../../types/types";
 import logger from "../../services/logger";
 import GroupModel from "../../models/group.model";
+import { delay } from "../randomTypingBreak";
 
 export const getGroups = async () => {
   const FLAG = "FETCH_GROUPS";
@@ -55,19 +56,26 @@ export const postStatus = async (caption: string, imageUrl: string) => {
   }
 };
 
-export const sendMessageToGroup = async (params: ISendToGroupParams) => {
-  const { groupId, message, imageUrl } = params;
-  const FLAG = "SEND_MESSAGE_TO_GROUP";
+
+export const sendMessage = async (params: ISendMessageParams) => {
+  const { contactId, groupId, message, imageUrl, to } = params;
+  const id = (to === "group" ? groupId : contactId) || "";
+  const chat = await client.getChatById(id);
+  const FLAG = `SEND_MESSAGE_TO_${to.toUpperCase()}`;
   try {
-    logger.info(`${FLAG} - Sending message to group ${groupId}: ${message}`);
+    logger.info(`${FLAG} - Sending message to ${to} ${id}: ${message}`);
     const media = imageUrl ? await MessageMedia.fromUrl(imageUrl) : null;
+    //imitate the typing status
+    await chat.sendStateTyping();
+    await delay({ message, min: 5000, max: 7000 });
     await client.sendMessage(
-      groupId,
+      id,
       media ? media : message,
       media ? { caption: message } : undefined,
     );
-    logger.info(`${FLAG} - Message sent successfully to group ${groupId}.`);
+    await chat.clearState();
+    logger.info(`${FLAG} - Message sent successfully to ${to} ${id}.`);
   } catch (error) {
-    logger.error(`${FLAG} - Error sending message to group ${groupId}:`, error);
+    logger.error(`${FLAG} - Error sending message to ${to} ${id}:`, error);
   }
 };

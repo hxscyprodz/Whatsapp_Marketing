@@ -1,16 +1,17 @@
 import PostModel from "../../models/post.model";
 import GroupModel from "../../models/group.model";
-import { sendMessageToGroup, postStatus } from "../../utils/whatsapp";
+import { sendMessage, postStatus } from "../../utils/whatsapp";
 import { PostType } from "../../types/types";
 import { format } from "../../libs/dateFns.lib";
 import logger from "../logger";
 import shuffle from "lodash.shuffle";
+import { delay } from "../../utils/randomTypingBreak";
 
 const schedulePostToGroups = async () => {
   const FLAG = "SCHEDULE_POST_TO_GROUPS";
   try {
     logger.info(`${FLAG} - Fetching scheduled posts...`);
-    const postTimes = ["06:00", "07:00", "08:00", "00:00"];
+    const postTimes = ["06:00", "07:00", "08:00", "02:00"];
     const time = format(new Date(), "HH:mm");
 
     if (!postTimes.includes(time)) return;
@@ -21,18 +22,22 @@ const schedulePostToGroups = async () => {
     });
 
     if (post) {
+      //A break to make sure it doesn't send in the exact post times 
+      await delay({ message: "a", min: 120000, max: 1080000 });
+
       const unshuffledGroups = await GroupModel.find({}, { whatsappGroupId: 1 });
       const shuffledGroups = shuffle(unshuffledGroups);
       const groups = shuffledGroups.slice(0, Math.ceil(shuffledGroups.length / 2));
 
       for (const group of groups) {
-        await sendMessageToGroup({
+        await sendMessage({
+          to: "group",
           groupId: group.whatsappGroupId,
           message: post.caption,
           imageUrl: post.imageUrl || "",
         });
         // Sequential rate limiting: wait 10 seconds before sending to the next group
-        await new Promise((resolve) => setTimeout(resolve, 10000));
+        await delay({ message: post.caption, min: 5000, max: 7000 });
       }
 
       post.posted = true;

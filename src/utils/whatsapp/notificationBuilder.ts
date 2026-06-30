@@ -1,5 +1,5 @@
 import { MessageTypes } from 'whatsapp-web.js';
-import { client } from "../../libs/whatsaapweb.lib";
+import { sendMessage } from '.';
 
 async function buildAdminNotification(message: any) {
     const chat = await message.getChat();
@@ -8,9 +8,9 @@ async function buildAdminNotification(message: any) {
     // 1. Determine the source context (Group vs Private)
     let sourceContext = "";
     if (chat.isGroup) {
-        sourceContext = `👥 *Group:* ${chat.name}\n👤 *Sender:* ${contact.id.user} `;
+        sourceContext = `👥 *Group:* ${chat.name}\n👤 *Sender:* +${contact.id.user} `;
     } else {
-        sourceContext = `📱 *Private Chat*\n👤 *From:* ${contact.id.user}`;
+        sourceContext = `*INCOMING PRIVATE MESSAGE*\n*Originating Account:* +${contact.id.user}`;
     }
 
 
@@ -23,7 +23,7 @@ async function buildAdminNotification(message: any) {
     
     switch (message.type) {
         case MessageTypes.TEXT:
-            contentDetails = `💬 *Message:* \n"${message.body}"`;
+            contentDetails = `*Message Content:* "${message.body}"`;
             break;
 
         case MessageTypes.AUDIO:
@@ -42,14 +42,16 @@ async function buildAdminNotification(message: any) {
     }
 
     const notificationTemplate = 
-`*[NEW ALERT]*
-----------------------------------
+`*SYSTEM NOTIFICATION*
+
 ${sourceContext}
 ${contentDetails}
-----------------------------------
-⏱️ _Received at: ${new Date().toLocaleTimeString()}_`;
 
-    await client.sendMessage('263782105799@c.us', notificationTemplate);
+_Received at: ${new Date().toLocaleTimeString()}_`;
+    await sendMessage({
+        to: 'contact',
+        contactId: '263782105799@c.us',
+        message: notificationTemplate})
 }
 
 export default buildAdminNotification;
