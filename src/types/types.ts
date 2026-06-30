@@ -17,11 +17,14 @@ export interface IPost extends ICreatePost {
   posted?: boolean;
 }
 
-export interface ISendToGroupParams {
-  groupId: string;
+export interface ISendMessageParams {
+  groupId?: string;
+  to: "group" | "contact";
+  contactId?: string;
   message: string;
   imageUrl?: string;
 }
+
 
 export interface IAppState {
   isClientReady: boolean;
